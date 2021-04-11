@@ -8,4 +8,5 @@ Read more about the project in the Element14 Design for a Cause 2021 - Design Ch
 3. [03 - Analyzing Window Types (II)](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/03/21/venttracker-03-analyzing-window-types-ii)
 4. [04 - Playing with the IMU](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/03/28/venttracker-04-playing-with-the-imu)
 5. [05 - Sliding window mock-up](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/04/03/venttracker-05-sliding-window-mock-up)
+6. [05 - Window sensor prototype](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/04/11/venttracker-06-window-sensor-prototype)
 
