@@ -10,4 +10,4 @@ Read more about the project in the Element14 Design for a Cause 2021 - Design Ch
 5. [05 - Sliding window mock-up](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/04/03/venttracker-05-sliding-window-mock-up)
 6. [05 - Window sensor prototype](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/04/11/venttracker-06-window-sensor-prototype)
 7. [07 - Adjusting the window sensor](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/04/18/venttracker-07-adjusting-the-window-sensor)
-
+8. [08 - Trying to make a measuring device with the accelerometer](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/04/25/venttracker-08-trying-to-make-a-digital-meter-with-the-accelerometer)
