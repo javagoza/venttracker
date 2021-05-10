@@ -13,3 +13,4 @@ Read more about the project in the Element14 Design for a Cause 2021 - Design Ch
 8. [08 - Trying to make a measuring device with the accelerometer](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/04/25/venttracker-08-trying-to-make-a-digital-meter-with-the-accelerometer)
 9. [09 - Checking and updating WiFiNINA Firmware](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/04/27/webserver-window-monitoring)
 10. [10 - Ventilation monitor on Arduino IoT Cloud](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/05/02/venttracker-10-ventilation-monitor-on-arduino-iot-cloud)
+10. [10 - -Wireless environmental monitor on arduino nano 33 IoT](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/05/10/venttracker-11-wireless-environmental-monitor-on-arduino-nano-33-iot)
