@@ -14,3 +14,4 @@ Read more about the project in the Element14 Design for a Cause 2021 - Design Ch
 9. [09 - Checking and updating WiFiNINA Firmware](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/04/27/webserver-window-monitoring)
 10. [10 - Ventilation monitor on Arduino IoT Cloud](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/05/02/venttracker-10-ventilation-monitor-on-arduino-iot-cloud)
 11. [11 - -Wireless environmental monitor on arduino nano 33 IoT](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/05/10/venttracker-11-wireless-environmental-monitor-on-arduino-nano-33-iot)
+12. [12 - Window Anomaly Detection. Edge Impulse & Arduino Nano 33 IoT](https://www.element14.com/community/community/design-challenges/design-for-a-cause-2021/blog/2021/05/16/venttracker-12-window-anomaly-detection-edge-impulse-arduino-nano-33-iot)
