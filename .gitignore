@@ -30,3 +30,5 @@
 *.exe
 *.out
 *.app
+blog_14/code/environmental_monitor_version_02/arduino_secrets.h
+blog_14/code/environmental_monitor_version_02/thingProperties.h
