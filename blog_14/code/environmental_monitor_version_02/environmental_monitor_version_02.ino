@@ -13,7 +13,7 @@
   Author: Enrique Albertos
   Date: 2021-05-21
 */
-//#define DEBUG
+#define DEBUG
 #include "thingProperties.h"
 
 #include <SPI.h>
@@ -27,6 +27,7 @@
 #include "SparkFunCCS811.h" //Click here to get the library: http://librarymanager/All#SparkFun_CCS811
 #include "SparkFunHTU21D.h"
 #include <SparkFunLSM6DS3.h>
+#include "venttracker_icons.h"
 extern RTCZero rtc;
 const int GMT = 2; //change this to adapt it to your time zone
 
@@ -49,8 +50,9 @@ char ssid[] = SECRET_SSID;        // your network SSID (name)
 char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
 int keyIndex = 0;            // your network key index number (needed only for WEP)
 
-long lastEnvironmentUpdate;
-long lastTimeUpdate;
+unsigned long lastEnvironmentUpdate;
+unsigned long lastTimeUpdate;
+unsigned long lastTimeDisplayUpdate;
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 160 // OLED display height, in pixels
@@ -61,31 +63,6 @@ Adafruit_ST7735 tft(TFT_CS, TFT_DC, TFT_RST);
 
 #define DEG2RAD 0.0174532925
 
-// icons
-const unsigned short termo6x16[96] PROGMEM={
-0x0000, 0x31A6, 0xFFFF, 0xFFFF, 0x31A6, 0x0000, 0x0000, 0xFFFF, 0x31A6, 0x0000, 0xFFFF, 0x0000, 0x0000, 0xFFFF, 0xFFFF, 0x0000,   // 0x0010 (16) pixels
-0xFFFF, 0x0000, 0x0000, 0xFFFF, 0x31A6, 0x0000, 0xFFFF, 0x0000, 0x0000, 0xFFFF, 0xFFFF, 0x0000, 0xFFFF, 0x0000, 0x0000, 0xFFFF,   // 0x0020 (32) pixels
-0x31A6, 0x0000, 0xFFFF, 0x0000, 0x0000, 0xFFFF, 0xFFFF, 0x0000, 0xFFFF, 0x0000, 0x0000, 0xFFFF, 0x31A6, 0x0000, 0xFFFF, 0x0000,   // 0x0030 (48) pixels
-0x0000, 0xFFFF, 0xFFFF, 0x0000, 0xFFFF, 0x0000, 0x0000, 0xFFFF, 0x31A6, 0x0000, 0xFFFF, 0x0000, 0x0000, 0xFFFF, 0x31A6, 0x0000,   // 0x0040 (64) pixels
-0xFFFF, 0x0000, 0x31A6, 0xD69A, 0x31A6, 0x0000, 0xD69A, 0x31A6, 0xFFFF, 0x31A6, 0x0000, 0x0000, 0x0000, 0xFFFF, 0xFFFF, 0x31A6,   // 0x0050 (80) pixels
-0x31A6, 0x0000, 0x0000, 0xFFFF, 0x31A6, 0xFFFF, 0x31A6, 0x0000, 0xFFFF, 0x31A6, 0x0000, 0x31A6, 0xFFFF, 0xFFFF, 0x31A6, 0x0000,   // 0x0060 (96) pixels
-};
-
-const unsigned short humidity6x16[96] PROGMEM={
-0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0xE71C, 0xE71C,   // 0x0010 (16) pixels
-0x0000, 0x0000, 0x0000, 0x0000, 0xFFFF, 0xFFFF, 0x0000, 0x0000, 0x0000, 0xC638, 0xE71C, 0xE71C, 0xC638, 0x0000, 0x0000, 0xFFFF,   // 0x0020 (32) pixels
-0x0000, 0x0000, 0xFFFF, 0x0000, 0x0000, 0xFFFF, 0x0000, 0x0000, 0xFFFF, 0x0000, 0xE71C, 0xC638, 0x0000, 0x0000, 0xC638, 0xE71C,   // 0x0030 (48) pixels
-0xFFFF, 0x0000, 0x0000, 0x0000, 0x0000, 0xFFFF, 0xFFFF, 0x0000, 0x0000, 0x0000, 0x0000, 0xFFFF, 0xFFFF, 0x0000, 0x0000, 0x0000,   // 0x0040 (64) pixels
-0x0000, 0xFFFF, 0xFFFF, 0x0000, 0x0000, 0x0000, 0x0000, 0xFFFF, 0xE71C, 0xC638, 0x0000, 0x0000, 0xC638, 0xE71C, 0x0000, 0xE71C,   // 0x0050 (80) pixels
-0xFFFF, 0xFFFF, 0xE71C, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,   // 0x0060 (96) pixels
-};
-
-typedef struct {
-  const uint16_t  *data;
-  uint16_t width;
-  uint16_t height;
-  uint8_t dataSize;
-} tImage;
 const tImage termo3 = {termo6x16, 6, 16, 8};
 const tImage humidity = {humidity6x16, 6, 16, 8};
 
@@ -96,6 +73,8 @@ void setup() {
   Serial.begin(9600);
   delay(1500);
 #endif
+  initTFT();
+  scanNetworks();
   initProperties();
   // Connect to Arduino IoT Cloud
   ArduinoCloud.begin(ArduinoIoTPreferredConnection);
@@ -109,10 +88,15 @@ void loop()
   unsigned long msNow = millis();
   ArduinoCloud.update();
 
-  if (envEnabled && msNow - lastTimeUpdate >= 1000 )
+  if (envEnabled && msNow - lastTimeDisplayUpdate >= 1000L )
   {
       displayDateTime();
-      lastTimeUpdate = msNow;
+      if( msNow - lastTimeUpdate >= 300000L) { // refresh time each 5 minutes
+        updateTime();
+        lastTimeUpdate = msNow;
+      }
+      lastTimeDisplayUpdate = msNow;
+      
   }
 
   //Check to see if data is available
@@ -179,17 +163,22 @@ void initWifi(void) {
 #ifdef DEBUG 
   Serial.println("Connected to WiFi");
   printWifiStatus();
+  setDebugMessageLevel(4);
+  ArduinoCloud.printDebugInfo();
 #endif
 }
 
 
 
 // Display functions  -----------------------------------------------------------------
-
-
-void initDisplay(void) {
+void initTFT() {
   tft.initR(INITR_BLACKTAB);      // Init ST7735S chip, black tab
   tft.setRotation(2);
+  tft.fillScreen(ST77XX_BLACK);   
+}
+
+void initDisplay(void) {
+
   tft.fillScreen(ST77XX_BLACK);    
   tft.drawRGBBitmap(3,135, (const uint16_t *)termo3.data, termo3.width, termo3.height); // Copy to screen
   tft.drawRGBBitmap( tft.width()/2+15,135, (const uint16_t *)humidity.data, humidity.width, humidity.height); // Copy to screen
@@ -377,5 +366,51 @@ void onIoTSync() {
 #ifdef DEBUG
   Serial.println(">>> Board and Cloud SYNC OK");  
 #endif
+}
+
+void scanNetworks() {
+  // scan for nearby networks:
+  tft.setFont(NULL);
+  tft.setCursor(0,0);
+  tft.println("** Scan Networks **");
+  Serial.println("** Scan Networks **");
+
+  byte numSsid = WiFi.scanNetworks();
+
+  // print the list of networks seen:
+  Serial.print("SSID List:");
+  tft.println("SSID List:");
+  Serial.println(numSsid);
+  tft.println(numSsid);
+  // print the network number and name for each network found:
+  for (int thisNet = 0; thisNet<numSsid; thisNet++) {
+    Serial.print(thisNet);
+    Serial.print(") Network: ");
+    Serial.println(WiFi.SSID(thisNet));
+    tft.println(WiFi.SSID(thisNet));
+  }
+}
+
+void updateTime() {  
+  unsigned long epoch;
+  int numberOfTries = 0, maxTries = 6;
+  do {
+    epoch = WiFi.getTime();
+    numberOfTries++;
+  }  while ((epoch == 0) && (numberOfTries < maxTries));
+  if (numberOfTries == maxTries) {
+#ifdef DEBUG
+    Serial.print("NTP unreachable!!");
+#endif
+    return;
+
+  } else {
+#ifdef DEBUG
+    Serial.print("Epoch received: ");
+    Serial.println(epoch);
+#endif
+    rtc.setEpoch(epoch);
+
+  }
 }
 
